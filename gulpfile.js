@@ -27,10 +27,11 @@ var gulp = require('gulp');
 var connect = require('gulp-connect');
 var modRewrite = require('connect-modrewrite');
 var $ = require('gulp-load-plugins')();
+var imagemin = require('gulp-imagemin');
+var imageminPngcrush = require('imagemin-pngcrush');
 var del = require('del');
 var jsReporter = require('jshint-stylish');
 var pkg = require('./package.json');
-var karmaServer = require('karma').Server;
 var name = pkg.name;
 
 var templateOptions = {
@@ -49,15 +50,12 @@ var minifyHtmlOptions = {
   loose: true
 };
 
-var ngdocOptions = {
-  html5Mode: false,
-  title: 'ADF API Documentation'
+var paths = {
+ images: ['release/widgets/**/dist/img/*.*'],
+ extras: ['crossdomain.xml', 'humans.txt', 'manifest.appcache', 'robots.txt', 'favicon.ico'],
 };
 
-
-
 /** lint **/
-
 gulp.task('csslint', function(){
   gulp.src('src/styles/*.css')
       .pipe($.csslint())
@@ -111,17 +109,16 @@ gulp.task('js', function(){
       .pipe(gulp.dest('dist/'));
 });
 
+
+gulp.task('images', function() {
+  return gulp.src(paths.images)
+    .pipe(imageminPngcrush({reduce: true})())
+    .pipe(gulp.dest('dist/release/images'))
+})
+
 gulp.task('build', ['styles', 'js']);
 
-/** build docs **/
-
-gulp.task('docs', function(){
-  return gulp.src('src/scripts/*.js')
-    .pipe($.ngdocs.process(ngdocOptions))
-    .pipe(gulp.dest('./dist/docs'));
-});
-
-/** build sample **/
+/** build release **/
 gulp.task('install-widgets', function(){
   return gulp.src('release/widgets/*/bower.json')
              .pipe($.install());
@@ -236,6 +233,6 @@ gulp.task('serve', ['webserver', 'styles', 'watch']);
 gulp.task('travis', ['jslint', 'coverall', 'build']);
 
 /** shorthand methods **/
-gulp.task('all', ['build', 'docs', 'release']);
+gulp.task('all', ['build','release','images']);
 
 gulp.task('default', ['jslint', 'build']);
