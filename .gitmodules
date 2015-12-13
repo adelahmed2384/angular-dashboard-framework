@@ -1,0 +1,6 @@
+[submodule "release/widgets/icinga"]
+	path = release/widgets/icinga
+	url = https://ZakiAbahel@bitbucket.org/ZakiAbahel/adf-widget-icinga.git
+[submodule "release/structures/base"]
+	path = release/structures/base
+	url = https://ZakiAbahel@bitbucket.org/ZakiAbahel/adf-structures-base.git
